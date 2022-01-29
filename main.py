@@ -1,0 +1,315 @@
+import speech_recognition as sr
+import pyttsx3
+# import pywhatkit
+import datetime
+# import wikipedia
+import pyjokes
+# from gtts import gTTS
+import random
+import subprocess
+import webbrowser
+import tkinter as tk
+from tkinter import font
+from PIL import Image,ImageTk
+
+# text="Hajur Bhannus Tara English Ma!"
+
+
+# for i in range(0,5):
+#     rand_val = random.randint(0, len(Ilu_reply))
+#     print("Random_Val = ",rand_val,"Content = ",Ilu_reply[rand_val])
+# print("Lenght =",len(Ilu_reply))
+listener =sr.Recognizer()
+# for converting text to speech
+engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+rate = engine.getProperty('rate')
+engine.setProperty('voice',voices[1].id)
+engine.setProperty('rate', 105)
+# engine.setProperty('volume',1.0)
+
+# Speaking Maya
+def talk(text):
+    engine.say(text)
+    engine.runAndWait()
+
+def take_command():
+    global command,reply_from_maya
+    command=''
+    reply_from_maya=''
+    try:
+        with sr.Microphone() as source:
+            chat_window.insert(tk.END,"Listening....")
+            talk("Hey Dear I am listening")
+            voice = listener.listen(source)
+            command=listener.recognize_google(voice)
+            command = command.lower() # HeLLo --> hello
+            print(command)
+            # if 'maya' in command:
+            #     command=command.replace('maya','')
+    except:
+        chat_window.configure(state="normal")
+        chat_window.insert(tk.END, "Error Occurs Try again Later!\n")
+        chat_window.configure(state="disable")
+    return command
+
+
+# Maya is Performing actions for answers
+def run_maya():
+    global reply_from_maya
+    command = take_command()
+    chat_window.configure(state="normal")
+    chat_window.insert(tk.END,"You Said: "+str(command))
+    chat_window.configure(state="disable")
+    if ('play' in command) or ('play video' in command):
+        song=command.replace('play','') #removing play word from command
+        reply_from_maya="Playing song for you"
+        pywhatkit.playonyt(song)
+    elif ('time'in command) or ('current time' in command):
+        time=datetime.datetime.now().strftime('%I:%M %p')
+        print(time)
+        reply_from_maya='Current time is'+ time
+    elif ('date'in command) or ('today date' in command):
+        today_date=datetime.datetime.now().strftime('%d %B %Y, %A')
+        print(today_date)
+        reply_from_maya = 'Today date is ' + today_date
+    elif ('day'in command) and ('today' in command):
+        today_day=datetime.datetime.now().strftime('%A')
+        print(today_day)
+        reply_from_maya = 'Today is : ' + today_day
+# Executing Windows Applications-internals
+    # elif 'open notepad' or 'run notepad' or ('open' and 'notepad') or ('run' and 'notepad') in command:
+    #     subprocess.call("Notepad.exe")
+    elif ((('open cmd' in command) or ('open command prompt'  in command ) or ('open commandprompt'  in command) or ('run cmd' in command) or ('run command prompt'  in command) or ('run commandprompt'in command))):
+        subprocess.call("cmd.exe")
+    elif ((('open powershell' in command) or ('open power shell'  in command ) or ('open powercell'  in command) or ('run powershell' in command) or ('run power shell'  in command) or ('run powercell'in command))):
+        subprocess.call("Powershell.exe")
+    elif ((('open calculator' in command) or ('open calc' in command) or ('run calculator' in command) or ('run calc' in command))):
+        subprocess.call("calc.exe")
+
+# Executing Windows Applications -Externals
+    elif ((('open chrome' in command) or ('open google chrome'  in command ) or ('open googlechrome'  in command) or ('run chrome' in command) or ('run google chrome'  in command) or ('run googlechrome'in command))):
+        subprocess.call("C:/Program Files (x86)/Google/Chrome/Application/chrome.exe")
+    elif ((('open face book' in command) or ('open facebook'  in command ) or ('open fb'  in command) or ('run facebook' in command) or ('run face book'  in command) or ('run fb'in command))):
+        webbrowser.register('chrome', None, webbrowser.BackgroundBrowser("C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"))
+        webbrowser.get('chrome').open_new_tab('http://facebook.com/')
+    elif ((('open youtube' in command) or ('open you tube'  in command ) or ('open utube'  in command) or ('run youtube' in command) or ('run you tube'  in command) or ('run utube'in command))):
+        webbrowser.register('chrome', None, webbrowser.BackgroundBrowser("C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"))
+        webbrowser.get('chrome').open_new_tab('http://youtube.com/')
+    elif ((('open news' in command) or ('open neuse'  in command ) or ('open samachar'  in command) or ('run news' in command) or ('run neuse'  in command) or ('run samachar'in command))):
+    # elif (('open' or 'run') and ('news' or 'neuse' or 'samachar')) in command:
+        webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(
+        "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"))
+        webbrowser.get('chrome').open_new_tab('http://onlinekhabar.com/')
+
+# Details from wikepedia
+    elif 'who' in command:
+        person = command.replace('who','')
+        reply_from_maya =wikipedia.summary(person,1)
+        # print(info)
+        # talk(info)
+    elif 'are you single' in command:
+        with open("Contents/rusingle_reply.txt","r") as frus:
+            data=frus.read().split("\n")
+        reply_from_maya=random.choice(data)
+        # talk(selected)
+    elif 'hate you' in command:
+        with open("Contents/ihateyou.txt","r") as fihu:
+            data=fihu.read().split("\n")
+        reply_from_maya=random.choice(data)
+        # talk(selected)
+    elif ('dirty thing' in command) or ('never done' in command):
+        with open("Contents/ihateyou.txt","r") as fihu:
+            data=fihu.read().split("\n")
+        reply_from_maya=random.choice(data)
+        # talk(selected)
+    elif 'joke' in command:
+        reply_from_maya=pyjokes.get_joke()
+    elif 'how are you' in command:
+        with open("Contents/how_are_you_reply.txt", "r") as fhru:
+            data = fhru.read().split("\n")
+        reply_from_maya = random.choice(data)
+    elif 'shut up' in command:
+        reply_from_maya="Why dear what happens?"
+    elif 'love you' in command:
+        if 'bhuban' in command:
+            reply_from_maya="I Love You too dear!"
+        else:
+            with open("Contents/iloveyou_reply.txt", "r") as fllyou:
+                data = fllyou.read().split("\n")
+            reply_from_maya = random.choice(data)
+    #Love message for husband
+    elif ('love' in command )and ('message' in command) and ('husband' in command):
+        with open("Contents/love_msg_hsbnd.txt", "r") as flmh:
+            data = flmh.read().split("\n")
+        reply_from_maya = random.choice(data)
+        # talk(selected)
+    elif ('love' in command) and ('message' in command) and ('husband' in command):
+        with open("Contents/love_msg_wife.txt", "r") as flmw:
+            data = flmw.read().split("\n")
+        reply_from_maya = random.choice(data)
+        # talk(selected
+    elif (('love' in command and 'message' in command) ) and (('boyfriend' in command) or ('boy friend' in command)):
+    # elif ('love'and 'message' and ('boyfriend' or 'boy friend')) in command:
+        with open("Contents/love_msg_boyfriend.txt", "r") as flmbf:
+            data = flmbf.read().split("\n")
+        reply_from_maya = random.choice(data)
+        # talk(selected)
+    elif (('love' in command and 'message' in command) ) and (('girlfriend' in command) or ('girl friend' in command)):
+    # elif ('love'and 'message' and ('girlfriend' or 'girl friend')) in command:
+        with open("Contents/love_msg_girlfriend.txt", "r") as flmgf:
+            data = flmgf.read().split("\n")
+        reply_from_maya = random.choice(data)
+        # talk(selected)
+    elif ('love' in command)and ('quotes' in command):
+        with open("Contents/love_quotes.txt", "r") as flmgf:
+            data = flmgf.read().split("\n")
+        reply_from_maya = random.choice(data)
+        # talk(selected)
+    elif ('miss you' in command ) or ('miss u' in command):
+        with open("Contents/love_quotes.txt", "r") as fmu:
+            data = fmu.read().split("\n")
+        reply_from_maya = random.choice(data)
+    elif ('breakup' in command) or ('break up' in command) or ('breakup quotes' in command) or ('break up quotes' in command):
+        with open("Contents/breakup_quotes.txt", "r") as fbuq:
+            data = fbuq.read().split("\n")
+        reply_from_maya = random.choice(data)
+    elif ('betray' in command) or ('dating' in command) or ('betray quotes' in command):
+        with open("Contents/betray_quotes.txt", "r") as fbeq:
+            data = fbeq.read().split("\n")
+        reply_from_maya = random.choice(data)
+    elif ('revenge' in command) or ('take revenge'in command) or (('idea' in command) and ('revenge' in command)):
+        with open("Contents/how_to_take_revenge.txt", "r") as fhttr:
+            data = fhttr.read().split("\n")
+        reply_from_maya = random.choice(data)
+        # talk(selected)
+    elif 'abuse' in command:
+        if 'nikesh' in command:
+            reply_from_maya="You motherfucker. asshole.fuck you"
+        else:
+            reply_from_maya="No dear I can't!"
+    elif 'stop' in command:
+        talk("Requesting for stop")
+        exit()
+    # Exiting
+    elif 'exit' in command:
+        talk("Thank You Good Bye!")
+        exit()
+    else:
+        with open("Contents/dont_know.txt", "r") as fdk:
+            data = fdk.read().split("\n")
+        reply_from_maya = random.choice(data)
+        # talk(selected)
+
+    # Talking Final Reply
+    talk(reply_from_maya)
+    chat_window.configure(state="normal")
+    msg = "\nMAYA SAID : "+str(reply_from_maya)+"\n"
+    chat_window.insert(tk.END, msg)
+    chat_window.configure(state="disable")
+    talk("Thank You Good Bye!")
+
+# Showing the question asked by user
+def display_human_query(text):
+    pass
+
+# Showing the result to questions
+def display_maya_query():
+    pass
+
+
+# Starting Chat
+def start_chatting():
+    # global stop_chat_btn, start_chat_btn
+    # stop_chat_btn['state']=tk.NORMAL
+    # start_chat_btn['state']=tk.DISABLED
+    chat_window.configure(state="normal")
+    msg="Listening...\n"
+    chat_window.insert(tk.END, msg)
+    chat_window.configure(state="disable")
+    # while True:
+    run_maya()
+
+# Stop Chatting
+# def stop_chatting():
+#     # global stop_chat_btn, start_chat_btn
+#     # stop_chat_btn['state'] = tk.DISABLED
+#     # start_chat_btn['state'] = tk.NORMAL
+#     conversation_start(False)
+
+# Conversation
+# def conversation_start(x):
+#     if x==True:
+#         while True:
+#             is_calling(True)
+#     elif x==False:
+#         talk("Thank You Good Bye!")
+#         chat_window.configure(state="normal")
+#         msg = "Thank You Good Bye\n"
+#         chat_window.insert(tk.END, msg)
+#         chat_window.configure(state="disable")
+# Colors
+bluewish="#060f6a"
+light_bluewish="#028fdf"
+dark_red="#cc281e"
+global chat_window
+# global bluewish,light_bluewish,dark_red
+
+# main Window
+root =tk.Tk()
+root.title("Maya-Chat bot")
+root.iconbitmap('icons/Heart_icon.ico')
+canvas=tk.Canvas(root,width="500",height="600")
+canvas.grid(columnspan=3,rowspan=3)
+# canvas.config(background=bluewish)
+# root.config(background=bluewish)
+
+# Header
+header_title=tk.Label(root,text="YOUR MAYA",font=("Terminal",30),bg=dark_red,fg="White",padx=10,pady=10)
+header_title.grid(row=0,column=1,pady=10)
+# header_title.place(x=40, y=100)
+
+# Display Image
+logo=Image.open('logo/Maya_Logo1.png')
+logo = logo.resize((250, 300))
+logo=ImageTk.PhotoImage(logo)
+logo_label=tk.Label(image=logo)
+# logo_label.image=logo
+logo_label.grid(row=1,column=1)
+# logo_label.place(x=0, y=200)
+
+# Instructions
+instruction=tk.Label(root,text="Please Click Below Button To Talk With Me!",font="Terminal 15 underline",bg=bluewish,fg="White")
+instruction.grid(row=2,column=0,columnspan=3)
+# instruction.place(x=40, y=520)
+
+# Click_Button
+# Start
+chat_text=tk.StringVar()
+start_chat_btn=tk.Button(root,textvariable=chat_text,font="Terminal",fg="White",bg=dark_red,command=lambda:start_chatting())
+chat_text.set("Start Chatting!")
+start_chat_btn.grid(row=3,column=1,pady=10)
+# start_chat_btn.place(x=250, y=580)
+# Stop
+# chat_text=tk.StringVar()
+# stop_chat_btn=tk.Button(root,textvariable=chat_text,font="Terminal",fg="White",bg="green",command=lambda:stop_chatting())
+# chat_text.set("Stop Chatting!")
+# stop_chat_btn.grid(row=3,column=2)
+# stop_chat_btn.place(x=260, y=550)
+# stop_chat_btn['state']=tk.DISABLED
+
+# Chat Box:
+chat_window=tk.Text(root,bd=1,bg=light_bluewish,fg="white",width=50,height=10)
+chat_window.grid(row=4,column=0,columnspan=3)
+# chat_window.place(x=50,y=600,height=220)
+chat_window.insert(tk.END,"What do you want to know: \n")
+chat_window.configure(state="disabled")
+# Scrollbar for chat box
+scroller=tk.Scrollbar(root, command=chat_window.yview())
+scroller.grid(row=4,column=2)
+scroller.place(x=600,y=600,height=220)
+
+# Welcome Speech for Startup
+talk("Hello Dear, MAYA welcomes You!. Here I am to help you.")
+
+root.mainloop()
